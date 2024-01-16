@@ -5,7 +5,7 @@ use serde::{Deserialize, Serialize};
 pub struct Player {
     pub name: String,
     picked: Option<String>,
-    has_picked: bool,
+    pub has_picked: bool,
 }
 
 impl Player {
@@ -48,8 +48,23 @@ impl SecretSantaGame {
         if let Some(p) = self.players.iter().find(|p| p.name == player.name) {
             return Err(format!("Player {} already exists", p.name));
         }
+        if player.name.is_empty() {
+            return Err("Player name cannot be empty".into());
+        }
         self.players.push(player);
         Ok(())
+    }
+
+    pub fn remove_player(&mut self, player_name: &str) -> Result<(), String> {
+        if self.status != GameStatus::NotStarted {
+            return Err("Game already started or finished".into());
+        }
+        if let Some(index) = self.players.iter().position(|p| p.name == player_name) {
+            self.players.remove(index);
+            Ok(())
+        } else {
+            Err("Player not found".into())
+        }
     }
 
     pub fn start_game(&mut self) -> Result<(), String> {
@@ -321,5 +336,24 @@ mod tests {
         game.add_player(player.clone()).unwrap();
         let second_add = game.add_player(player);
         assert_eq!(second_add, Err("Player Player 1 already exists".into()));
+    }
+
+    #[test]
+    fn add_player_with_empty_name() {
+        let mut game = SecretSantaGame::new();
+        let player = Player::new("");
+        let result = game.add_player(player);
+        assert_eq!(result, Err("Player name cannot be empty".into()));
+    }
+
+    #[test]
+    fn remove_player_in_game() {
+        let mut game = SecretSantaGame::new();
+        let player = Player::new("Player 1");
+        game.add_player(player.clone()).unwrap();
+        assert_eq!(game.players.len(), 1);
+
+        let _ = game.remove_player(&player.name);
+        assert_eq!(game.players.len(), 0);
     }
 }

@@ -1,7 +1,7 @@
 use std::sync::{Arc, Mutex};
 
 use super::error::CustomError;
-use super::models::{PickedResponse, Players, SantaGameInfo};
+use super::models::{PickedResponse, PlayerInfo, Players, SantaGameInfo};
 use actix_web::{web, HttpResponse};
 use secret_santa::{Player, SecretSantaGame};
 
@@ -12,8 +12,11 @@ async fn index(game_data: web::Data<Arc<Mutex<SecretSantaGame>>>) -> SantaGameIn
         players: game
             .players
             .iter()
-            .map(|p| p.name.clone())
-            .collect::<Vec<String>>(),
+            .map(|player| PlayerInfo {
+                name: player.name.clone(),
+                has_picked: player.has_picked,
+            })
+            .collect(),
     }
 }
 
@@ -64,6 +67,20 @@ async fn pick_players(
     }
 }
 
+async fn remove_player(
+    player_name: web::Path<String>,
+    game_data: web::Data<Arc<Mutex<SecretSantaGame>>>,
+) -> Result<HttpResponse, CustomError> {
+    let mut game = game_data.lock().unwrap();
+    let result = game.remove_player(&player_name.into_inner());
+    if result.is_err() {
+        return Err(CustomError::ValidationError {
+            error: result.unwrap_err(),
+        });
+    }
+    Ok(HttpResponse::Ok().json("Player removed"))
+}
+
 async fn show_players(game_data: web::Data<Arc<Mutex<SecretSantaGame>>>) -> Players {
     let game = game_data.lock().unwrap();
     let mut players = Vec::new();
@@ -79,6 +96,7 @@ pub fn routes(cfg: &mut web::ServiceConfig) {
         .service(web::resource("reset-game").route(web::post().to(reset_game)))
         .service(web::resource("show-players").route(web::get().to(show_players)))
         .service(web::resource("player-pick/{player_name}").route(web::get().to(pick_players)))
+        .service(web::resource("remove-player/{player_name}").route(web::post().to(remove_player)))
         .service(web::resource("add-players").route(web::post().to(add_players)));
 }
 

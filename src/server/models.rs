@@ -3,9 +3,15 @@ use secret_santa::GameStatus;
 use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize)]
+pub struct PlayerInfo {
+    pub name: String,
+    pub has_picked: bool,
+}
+
+#[derive(Serialize, Deserialize)]
 pub struct SantaGameInfo {
     pub status: GameStatus,
-    pub players: Vec<String>,
+    pub players: Vec<PlayerInfo>,
 }
 
 #[derive(Serialize, Deserialize)]
