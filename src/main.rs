@@ -21,21 +21,22 @@ async fn main() -> std::io::Result<()> {
     let secret_santa_game = web::Data::new(game_data);
 
     HttpServer::new(move || {
-        // let cors = Cors::default()
-        //     .allowed_origin("http://localhost:8000")
-        //     .allowed_methods(vec!["GET", "POST"])
-        //     .allowed_headers(vec![
-        //         header::CONTENT_TYPE,
-        //         header::AUTHORIZATION,
-        //         header::ACCEPT,
-        //     ])
-        //     .supports_credentials();
+        let cors = Cors::default()
+            .allowed_origin("http://localhost:8080")
+            .allowed_origin("http://localhost:8000")
+            .allowed_methods(vec!["GET", "POST"])
+            .allowed_headers(vec![
+                header::CONTENT_TYPE,
+                header::AUTHORIZATION,
+                header::ACCEPT,
+            ])
+            .supports_credentials();
         App::new()
             .wrap(actix_web::middleware::Logger::default())
             .app_data(secret_santa_game.clone())
             .service(web::scope("/secret-santa").configure(routes))
-            //.wrap(cors)
             .service(Files::new("/", "./front/dist/").index_file("index.html"))
+            .wrap(cors)
     })
     .bind(("127.0.0.1", 8080))?
     .run()

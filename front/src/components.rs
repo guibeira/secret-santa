@@ -12,17 +12,19 @@ use yew::{function_component, html, prelude::*, Html};
 #[function_component(Confetti)]
 pub fn confetti() -> Html {
     html! {
-    <div id="confettis">
-      <div class="confetti"></div>
-      <div class="confetti"></div>
-      <div class="confetti"></div>
-      <div class="confetti"></div>
-      <div class="confetti"></div>
-      <div class="confetti"></div>
-      <div class="confetti"></div>
-      <div class="confetti"></div>
-      <div class="confetti"></div>
-    </div>
+        <div id="confettis">
+            <div class="confetti"></div>
+            <div class="confetti"></div>
+            <div class="confetti"></div>
+            <div class="confetti"></div>
+            <div class="confetti"></div>
+            <div class="confetti"></div>
+            <div class="confetti"></div>
+            <div class="confetti"></div>
+            <div class="confetti"></div>
+            <div class="confetti"></div>
+            <div class="confetti"></div>
+        </div>
     }
 }
 
@@ -329,8 +331,8 @@ pub fn in_progress(props: &PropsInProgressGame) -> Html {
                 }
             } else {
                 html! {
-                    <>
-                        <p class="animate__animated animate__tada text-sm text-gray-500 dark:text-gray-400 mb-4"> { "Quem é você?" }</p>
+                    <div class="">
+                        <p class="animate__tada text-sm text-gray-500 dark:text-gray-400 mb-4"> { "Quem é você?" }</p>
                         <select onchange={onchange} class="block w-full px-4 py-3 text-base text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" >
                             <option selected={true}  value={""}>{"Selecione seu nome"}</option>
                         {
@@ -346,7 +348,7 @@ pub fn in_progress(props: &PropsInProgressGame) -> Html {
                         }else{
                             html!{}
                         }}
-                    </>
+                    </div>
                 }
             }}
 
