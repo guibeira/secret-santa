@@ -1,5 +1,4 @@
 use actix_files::Files;
-use actix_web::HttpResponse;
 use dotenv::dotenv;
 use std::sync::Arc;
 use std::sync::Mutex;
