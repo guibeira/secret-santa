@@ -109,7 +109,7 @@ mod tests {
 
     #[actix_rt::test]
     async fn test_index() {
-        let game = SecretSantaGame::new();
+        let game = SecretSantaGame::default();
         let game_data = Arc::new(Mutex::new(game));
         let secret_santa_game = web::Data::new(game_data);
 
@@ -132,7 +132,7 @@ mod tests {
 
     #[actix_rt::test]
     async fn test_add_players() {
-        let game = SecretSantaGame::new();
+        let game = SecretSantaGame::default();
         let game_data = Arc::new(Mutex::new(game));
         let secret_santa_game = web::Data::new(game_data);
 
@@ -161,7 +161,7 @@ mod tests {
 
     #[actix_rt::test]
     async fn test_start_game() {
-        let game = SecretSantaGame::new();
+        let game = SecretSantaGame::default();
         let game_data = Arc::new(Mutex::new(game));
         let secret_santa_game = web::Data::new(game_data);
 
@@ -189,7 +189,7 @@ mod tests {
 
     #[actix_rt::test]
     async fn test_reset_game() {
-        let game = SecretSantaGame::new();
+        let game = SecretSantaGame::default();
         let game_data = Arc::new(Mutex::new(game));
         let secret_santa_game = web::Data::new(game_data);
 
@@ -231,7 +231,7 @@ mod tests {
 
     #[actix_rt::test]
     async fn test_pick_players() {
-        let game = SecretSantaGame::new();
+        let game = SecretSantaGame::default();
         let game_data = Arc::new(Mutex::new(game));
         let secret_santa_game = web::Data::new(game_data);
 
@@ -268,7 +268,7 @@ mod tests {
 
     #[actix_rt::test]
     async fn test_show_players() {
-        let game = SecretSantaGame::new();
+        let game = SecretSantaGame::default();
         let game_data = Arc::new(Mutex::new(game));
         let secret_santa_game = web::Data::new(game_data);
 
@@ -302,7 +302,7 @@ mod tests {
 
     #[actix_rt::test]
     async fn test_add_players_with_invalid_name() {
-        let game = SecretSantaGame::new();
+        let game = SecretSantaGame::default();
         let game_data = Arc::new(Mutex::new(game));
         let secret_santa_game = web::Data::new(game_data);
 
@@ -329,7 +329,7 @@ mod tests {
 
     #[actix_rt::test]
     async fn test_start_game_with_no_players() {
-        let game = SecretSantaGame::new();
+        let game = SecretSantaGame::default();
         let game_data = Arc::new(Mutex::new(game));
         let secret_santa_game = web::Data::new(game_data);
 
@@ -349,7 +349,7 @@ mod tests {
 
     #[actix_rt::test]
     async fn test_pick_players_with_no_game_started() {
-        let game = SecretSantaGame::new();
+        let game = SecretSantaGame::default();
         let game_data = Arc::new(Mutex::new(game));
         let secret_santa_game = web::Data::new(game_data);
 
@@ -369,7 +369,7 @@ mod tests {
 
     #[actix_rt::test]
     async fn test_pick_players_with_invalid_player_name() {
-        let game = SecretSantaGame::new();
+        let game = SecretSantaGame::default();
         let game_data = Arc::new(Mutex::new(game));
         let secret_santa_game = web::Data::new(game_data);
         let mut app = test::init_service(
@@ -398,7 +398,7 @@ mod tests {
 
     #[actix_rt::test]
     async fn test_pick_players_with_player_already_picked() {
-        let game = SecretSantaGame::new();
+        let game = SecretSantaGame::default();
         let game_data = Arc::new(Mutex::new(game));
         let secret_santa_game = web::Data::new(game_data);
         let mut app = test::init_service(
@@ -431,7 +431,7 @@ mod tests {
 
     #[actix_rt::test]
     async fn test_pick_players_with_game_already_finished() {
-        let mut game = SecretSantaGame::new();
+        let mut game = SecretSantaGame::default();
         game.add_player(Player::new("Player1")).unwrap();
         game.add_player(Player::new("Player2")).unwrap();
         game.start_game().unwrap();
@@ -454,7 +454,7 @@ mod tests {
 
     #[actix_rt::test]
     async fn test_pick_players_with_game_not_started() {
-        let mut game = SecretSantaGame::new();
+        let mut game = SecretSantaGame::default();
         game.add_player(Player::new("Player1")).unwrap();
         game.add_player(Player::new("Player2")).unwrap();
         let game_data = Arc::new(Mutex::new(game));
@@ -474,7 +474,7 @@ mod tests {
 
     #[actix_rt::test]
     async fn test_pick_players_with_game_already_restarted() {
-        let mut game = SecretSantaGame::new();
+        let mut game = SecretSantaGame::default();
         game.add_player(Player::new("Player1")).unwrap();
         game.add_player(Player::new("Player2")).unwrap();
         game.start_game().unwrap();

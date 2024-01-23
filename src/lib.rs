@@ -31,8 +31,8 @@ pub struct SecretSantaGame {
     pub players: Vec<Player>,
 }
 
-impl SecretSantaGame {
-    pub fn new() -> Self {
+impl Default for SecretSantaGame {
+    fn default() -> Self {
         SecretSantaGame {
             status: GameStatus::NotStarted,
             players: vec![],
@@ -168,7 +168,7 @@ mod tests {
 
     #[test]
     fn start_game() {
-        let mut game = SecretSantaGame::new();
+        let mut game = SecretSantaGame::default();
         for i in 0..10 {
             let player = Player::new(&format!("Player {}", i));
             let _ = game.add_player(player);
@@ -186,7 +186,7 @@ mod tests {
 
     #[test]
     fn restart_game() {
-        let mut game = SecretSantaGame::new();
+        let mut game = SecretSantaGame::default();
         for i in 0..10 {
             let player = Player::new(&format!("Player {}", i));
             let _ = game.add_player(player);
@@ -206,7 +206,7 @@ mod tests {
 
     #[test]
     fn pick_player() {
-        let mut game = SecretSantaGame::new();
+        let mut game = SecretSantaGame::default();
         for i in 0..10 {
             let player = Player::new(&format!("Player {}", i));
             let _ = game.add_player(player);
@@ -226,7 +226,7 @@ mod tests {
 
     #[test]
     fn start_game_with_less_than_two_players() {
-        let mut game = SecretSantaGame::new();
+        let mut game = SecretSantaGame::default();
         let player = Player::new("Player 1");
         let _ = game.add_player(player);
 
@@ -236,7 +236,7 @@ mod tests {
 
     #[test]
     fn start_game_twice() {
-        let mut game = SecretSantaGame::new();
+        let mut game = SecretSantaGame::default();
         for i in 0..10 {
             let player = Player::new(&format!("Player {}", i));
             let _ = game.add_player(player);
@@ -249,7 +249,7 @@ mod tests {
 
     #[test]
     fn start_game_that_already_finished() {
-        let mut game = SecretSantaGame::new();
+        let mut game = SecretSantaGame::default();
 
         for i in 0..10 {
             let player = Player::new(&format!("Player {}", i));
@@ -272,7 +272,7 @@ mod tests {
 
     #[test]
     fn pick_player_that_not_started() {
-        let mut game = SecretSantaGame::new();
+        let mut game = SecretSantaGame::default();
         for i in 0..10 {
             let player = Player::new(&format!("Player {}", i));
             let _ = game.add_player(player);
@@ -285,7 +285,7 @@ mod tests {
 
     #[test]
     fn pick_player_that_already_finished() {
-        let mut game = SecretSantaGame::new();
+        let mut game = SecretSantaGame::default();
         for i in 0..10 {
             let player = Player::new(&format!("Player {}", i));
             let _ = game.add_player(player);
@@ -308,7 +308,7 @@ mod tests {
 
     #[test]
     fn add_player_in_a_finished_game() {
-        let mut game = SecretSantaGame::new();
+        let mut game = SecretSantaGame::default();
         for i in 0..10 {
             let player = Player::new(&format!("Player {}", i));
             let _ = game.add_player(player);
@@ -331,7 +331,7 @@ mod tests {
 
     #[test]
     fn add_player_with_same_name_twice() {
-        let mut game = SecretSantaGame::new();
+        let mut game = SecretSantaGame::default();
         let player = Player::new("Player 1");
         game.add_player(player.clone()).unwrap();
         let second_add = game.add_player(player);
@@ -340,7 +340,7 @@ mod tests {
 
     #[test]
     fn add_player_with_empty_name() {
-        let mut game = SecretSantaGame::new();
+        let mut game = SecretSantaGame::default();
         let player = Player::new("");
         let result = game.add_player(player);
         assert_eq!(result, Err("Player name cannot be empty".into()));
@@ -348,7 +348,7 @@ mod tests {
 
     #[test]
     fn remove_player_in_game() {
-        let mut game = SecretSantaGame::new();
+        let mut game = SecretSantaGame::default();
         let player = Player::new("Player 1");
         game.add_player(player.clone()).unwrap();
         assert_eq!(game.players.len(), 1);
