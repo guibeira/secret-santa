@@ -124,25 +124,16 @@ impl SecretSantaGame {
             return Err("Game finished".into());
         }
 
-        let mut picked_name = None;
-
         if let Some(player) = self.players.iter_mut().find(|p| p.name == player_name) {
             if player.has_picked {
                 return Err("Player has already picked".into());
             }
-
             player.has_picked = true;
-            picked_name = player.picked.clone();
+            let picked_name = player.picked.clone();
+            self.check_game_status();
+            return Ok(picked_name.unwrap());
         } else {
             return Err("Player not found".into());
-        }
-
-        self.check_game_status();
-
-        if picked_name.is_none() {
-            return Err("Player not found".into());
-        } else {
-            Ok(picked_name.unwrap())
         }
     }
 }
