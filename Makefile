@@ -13,3 +13,8 @@ install-deps:
 
 up:
 	make install-deps && cd front && trunk build --release && cd .. && cargo run
+
+
+build:
+	make install-deps && cd front && trunk build --release && cd .. && cargo build --release
+
