@@ -18,6 +18,28 @@ use actix_web_static_files::ResourceFiles;
 
 include!(concat!(env!("OUT_DIR"), "/generated.rs"));
 
+
+async fn open_browser(url: &str) {
+    let (command, args) = if cfg!(target_os = "windows") {
+        ("cmd", vec!["/C", "start", url])
+    } else if cfg!(target_os = "macos") {
+        ("open", vec![url])
+    } else if cfg!(target_os = "linux") {
+        ("xdg-open", vec![url])
+    } else {
+        eprintln!("Opening browser is not supported on this OS.");
+        return;
+    };
+
+    if let Err(err) = Command::new(command)
+        .args(&args)
+        .spawn()
+    {
+        eprintln!("Failed to open browser: {}", err);
+    }
+}
+
+
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
     env_logger::init_from_env(env_logger::Env::new().default_filter_or("info"));
@@ -47,22 +69,10 @@ async fn main() -> std::io::Result<()> {
                 .unwrap();
             client.listen().await.unwrap();
         });
-        #[cfg(target_os = "windows")]
-        let command = "cmd";
-        #[cfg(not(target_os = "windows"))]
-        let command = "open";
-
-        #[cfg(target_os = "windows")]
-        let args = vec!["/C", "start", &bore_url];
-        #[cfg(not(target_os = "windows"))]
-        let args = vec![&bore_url];
-
-        log::info!("Opening browser at {} {}", command, bore_url);
-
-        Command::new(command).args(&args).output().await.unwrap();
     }
 
-    HttpServer::new(move || {
+    let bore_url_cl = bore_url.clone();
+    let _ = HttpServer::new(move || {
         let cors = Cors::default()
             .allowed_origin(&bore_url)
             .allowed_origin(&localhost_url)
@@ -83,6 +93,10 @@ async fn main() -> std::io::Result<()> {
             .wrap(cors)
     })
     .bind(("127.0.0.1", LOCAL_PORT))?
+    .workers(1)
     .run()
-    .await
+    .await;
+
+    open_browser(&bore_url_cl).await;
+    Ok(())
 }
