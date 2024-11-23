@@ -2,17 +2,16 @@ use actix_web::{http::header, web, App, HttpServer};
 use tokio;
 use tokio::process::Command;
 
+use bore_cli::client::Client;
 use dotenv::dotenv;
 use std::sync::Arc;
 use std::sync::Mutex;
-use bore_cli::client::Client;
 
 mod server;
 use actix_cors::Cors;
 
 use secret_santa::SecretSantaGame;
 use server::routes::routes;
-
 
 const LOCAL_PORT: u16 = 8080;
 use actix_web_static_files::ResourceFiles;
@@ -43,14 +42,24 @@ async fn main() -> std::io::Result<()> {
         log::info!("Running in release mode");
         // init tunneling client
         tokio::spawn(async move {
-            let client = Client::new("localhost", LOCAL_PORT, "bore.pub", bore_port, None).await.unwrap();
+            let client = Client::new("localhost", LOCAL_PORT, "bore.pub", bore_port, None)
+                .await
+                .unwrap();
             client.listen().await.unwrap();
         });
-        Command::new("open")
-            .arg(bore_url.clone())
-            .output()
-            .await
-            .unwrap();
+        #[cfg(target_os = "windows")]
+        let command = "cmd";
+        #[cfg(not(target_os = "windows"))]
+        let command = "open";
+
+        #[cfg(target_os = "windows")]
+        let args = vec!["/C", "start", &bore_url];
+        #[cfg(not(target_os = "windows"))]
+        let args = vec![&bore_url];
+
+        log::info!("Opening browser at {} {}", command, bore_url);
+
+        Command::new(command).args(&args).output().await.unwrap();
     }
 
     HttpServer::new(move || {
@@ -77,4 +86,3 @@ async fn main() -> std::io::Result<()> {
     .run()
     .await
 }
-

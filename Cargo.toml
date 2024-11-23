@@ -31,4 +31,4 @@ static-files = "0.2.1"
 
 [build-dependencies]
 static-files = "0.2.1"
-
+winres = "0.1"
