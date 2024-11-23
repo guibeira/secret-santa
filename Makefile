@@ -18,3 +18,6 @@ up:
 build:
 	make install-deps && cd front && trunk build --release && cd .. && cargo build --release
 
+build-mac:
+	make build && ./scripts/make_bundle_mac.sh
+
