@@ -7,16 +7,12 @@ pub struct Api {
     url: String,
 }
 
-impl Default for Api {
-    fn default() -> Self {
-        // load url from env
-        let url = std::env::var("SANTA_API_URL")
-            .unwrap_or("http://localhost:8080/secret-santa".to_string());
+impl Api {
+
+    pub fn new(url: String) -> Self {
+        let url = url+"secret-santa";
         Api { url }
     }
-}
-
-impl Api {
     pub async fn remove_player(
         &self,
         name: &String,

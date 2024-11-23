@@ -1,5 +1,5 @@
 use std::ops::Deref;
-
+use web_sys::window;
 use gloo::console::log;
 use serde::{Deserialize, Serialize};
 use yew::{function_component, html, prelude::*, use_effect_with, Html};
@@ -63,7 +63,13 @@ pub fn loading() -> Html {
 pub fn app() -> Html {
     let santa_game_info: UseStateHandle<SantaGameInfo> = use_state(|| SantaGameInfo::default());
     let is_loading = use_state(|| true);
-    let api = Api::default();
+
+    let url = window()
+        .unwrap()
+        .location()
+        .href()
+        .unwrap_or_else(|_| "unknown".to_string());
+    let api = Api::new(url);
 
     let counter = santa_game_info.deref().players.iter().count();
 

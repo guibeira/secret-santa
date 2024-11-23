@@ -7,6 +7,7 @@ use std::collections::HashMap;
 use std::ops::Deref;
 use wasm_bindgen::JsCast;
 use web_sys::HtmlInputElement;
+use web_sys::window;
 use yew::{function_component, html, prelude::*, Html};
 
 #[function_component(Confetti)]
@@ -35,7 +36,12 @@ pub struct PropsStartGame {
 
 #[function_component(InitGame)]
 pub fn init_game(props: &PropsStartGame) -> Html {
-    let api = Api::default();
+    let url = window()
+        .unwrap()
+        .location()
+        .href()
+        .unwrap_or_else(|_| "unknown".to_string());
+    let api = Api::new(url);
     let error_msg: UseStateHandle<Option<String>> = use_state(|| None);
     let sante_game_info = props.santa_game_info.clone();
     let participant_name: UseStateHandle<String> = use_state(|| "".to_string());
@@ -273,7 +279,12 @@ pub struct Person {
 pub fn in_progress(props: &PropsInProgressGame) -> Html {
     let partcipant_selected: UseStateHandle<String> = use_state(|| "".to_string());
     let sorted_participant: UseStateHandle<Option<Person>> = use_state(|| None);
-    let api = Api::default();
+    let url = window()
+        .unwrap()
+        .location()
+        .href()
+        .unwrap_or_else(|_| "unknown".to_string());
+    let api = Api::new(url);
 
     let onchange = {
         let partcipant_selected = partcipant_selected.clone();
