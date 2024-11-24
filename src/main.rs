@@ -1,3 +1,4 @@
+//use actix_files::Files;
 use actix_web::{http::header, web, App, HttpServer};
 use tokio;
 use tokio::process::Command;
@@ -90,6 +91,7 @@ async fn main() -> std::io::Result<()> {
             .app_data(secret_santa_game.clone())
             .service(web::scope("/secret-santa").configure(routes))
             .service(ResourceFiles::new("/", generated))
+            //.service(Files::new("/", "./front/dist/").index_file("index.html"))
             .wrap(cors)
     })
     .bind(("127.0.0.1", LOCAL_PORT))?

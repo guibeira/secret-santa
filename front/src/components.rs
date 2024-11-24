@@ -7,7 +7,7 @@ use std::collections::HashMap;
 use std::ops::Deref;
 use wasm_bindgen::JsCast;
 use web_sys::HtmlInputElement;
-use web_sys::window;
+use web_sys::{window, MouseEvent};
 use yew::{function_component, html, prelude::*, Html};
 
 #[function_component(Confetti)]
@@ -69,7 +69,6 @@ pub fn init_game(props: &PropsStartGame) -> Html {
                 if response.status() != 200 {
                     let api_response = response.json::<ApiError>().await.unwrap();
                     log!(format!("Error msg : {}", api_response.error));
-                    return;
                 } else {
                     let santa_game = santa_game_info_clone.deref().clone();
                     santa_game_info_clone.set(SantaGameInfo {
@@ -189,6 +188,7 @@ pub fn init_game(props: &PropsStartGame) -> Html {
         });
     });
 
+
     // for better visualization
     let sante_game_info_clone = props.santa_game_info.clone();
     let mut new_participants = HashMap::new();
@@ -208,7 +208,9 @@ pub fn init_game(props: &PropsStartGame) -> Html {
             if *is_loading {
                 <div>{ "Loading..." }</div>
             } else {
-                <div>
+
+            <div class="flex justify-center">
+                <div class="w-full max-w-[48rem]">
                     <span class="text-sm text-gray-500 dark:text-gray-400"> { "Entre com os nomes dos participantes"  }</span>
                         <form class="mt-4" onsubmit={onsubmit}>
                                 <div class="flex">
@@ -238,7 +240,7 @@ pub fn init_game(props: &PropsStartGame) -> Html {
                                             </p>
                                             <button onclick={move |_| remove_player.emit(participant_name_clone.clone())} type="button" class=" text-blue-700 border border-blue-700 hover:bg-blue-700 hover:text-white focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-full text-sm p-2.5 text-centeritems-center dark:border-blue-500 dark:text-blue-500 dark:hover:text-white dark:focus:ring-blue-800 dark:hover:bg-blue-500 mr-2">
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none">
-      <path d="M4 7H20M10 10V18M14 10V18M10 3H14C14.2652 3 14.5196 3.10536 14.7071 3.29289C14.8946 3.48043 15 3.73478 15 4V7H9V4C9 3.73478 9.10536 3.48043 9.29289 3.29289C9.48043 3.10536 9.73478 3 10 3ZM6 7H18V20C18 20.2652 17.8946 20.5196 17.7071 20.7071C17.5196 20.8946 17.2652 21 17 21H7C6.73478 21 6.48043 20.8946 6.29289 20.7071C6.10536 20.5196 6 20.2652 6 20V7Z" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M4 7H20M10 10V18M14 10V18M10 3H14C14.2652 3 14.5196 3.10536 14.7071 3.29289C14.8946 3.48043 15 3.73478 15 4V7H9V4C9 3.73478 9.10536 3.48043 9.29289 3.29289C9.48043 3.10536 9.73478 3 10 3ZM6 7H18V20C18 20.2652 17.8946 20.5196 17.7071 20.7071C17.5196 20.8946 17.2652 21 17 21H7C6.73478 21 6.48043 20.8946 6.29289 20.7071C6.10536 20.5196 6 20.2652 6 20V7Z" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
     </svg>
                                                 <span class="sr-only">{"Remover participante"}</span>
                                             </button>
@@ -261,6 +263,7 @@ pub fn init_game(props: &PropsStartGame) -> Html {
                         html!{}
                     }}
                 </div>
+            </div>
             }
         }
 }
@@ -284,7 +287,8 @@ pub fn in_progress(props: &PropsInProgressGame) -> Html {
         .location()
         .href()
         .unwrap_or_else(|_| "unknown".to_string());
-    let api = Api::new(url);
+
+    let api = Api::new(url.clone());
 
     let onchange = {
         let partcipant_selected = partcipant_selected.clone();
@@ -323,12 +327,40 @@ pub fn in_progress(props: &PropsInProgressGame) -> Html {
         })
     };
 
+
+    let copy_to_clipboard = {
+        let url = url.clone();
+        Callback::from(move |_: MouseEvent| {
+            if let Some(window) = window() {
+                if let Some(navigator) = window.navigator().dyn_into::<web_sys::Navigator>().ok() {
+                    let clipboard = navigator.clipboard();
+                    let text = url.clone();
+                    wasm_bindgen_futures::spawn_local(async move {
+                        let promise = clipboard.write_text(&text);
+                        match wasm_bindgen_futures::JsFuture::from(promise).await {
+                            Ok(_) => {
+                                alert("Copiado para a área de transferência");
+                            }
+                            Err(err) => {
+                                alert(&format!(
+                                    "Erro ao copiar para a área de transferência: {:?}",
+                                    err
+                                ));
+                            }
+                        }
+                    });
+                }
+            }
+        })
+    };
+
     let participants_filtred = props
         .participants
         .iter()
         .filter(move |participant| !participant.has_picked)
         .map(|participant| participant.clone())
         .collect::<Vec<Player>>();
+
     html! {
         <div>
             { if let Some(sorted_participant) = sorted_participant.deref() {
@@ -342,7 +374,9 @@ pub fn in_progress(props: &PropsInProgressGame) -> Html {
                 }
             } else {
                 html! {
+
                     <div class="">
+
                         <p class="animate__tada text-sm text-gray-500 dark:text-gray-400 mb-4"> { "Quem é você?" }</p>
                         <select onchange={onchange} class="block w-full px-4 py-3 text-base text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" >
                             <option selected={true}  value={""}>{"Selecione seu nome"}</option>
@@ -359,6 +393,36 @@ pub fn in_progress(props: &PropsInProgressGame) -> Html {
                         }else{
                             html!{}
                         }}
+
+                        <h2 class="animate__animated animate__rubberBand mb-4 mt-20 text-4xl font-extrabold leading-none tracking-tight text-gray-900 md:text-5xl lg:text-6xl dark:text-white">{"Compartilhe o sorteio com seus amigos 👇"}</h2>
+                        <div class="flex justify-center">
+                        <div class="grid grid-cols-8 gap-2 w-full max-w-[23rem]">
+                            <label for="link" class="sr-only">{"Label"} </label>
+                            <input
+                                id="link"
+                                type="text"
+                                class="col-span-6 bg-gray-50 border border-gray-300 text-gray-500 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                value={url.clone()}
+                                readonly={true}
+                                disabled={true}
+                            />
+
+                            <button
+                                data-copy-to-clipboard-target="npm-install"
+                                class="col-span-2 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 items-center inline-flex justify-center"
+                                onclick={copy_to_clipboard}
+                            >
+
+                                <span id="default-message">{" Copiar link "}</span>
+                                <span id="success-message" class="hidden inline-flex items-center">
+                                    <svg class="w-3 h-3 text-white me-1.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 16 12">
+                                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 5.917 5.724 10.5 15 1.5"/>
+                                    </svg>
+                                    {"Copied!"}
+                                </span>
+                            </button>
+                        </div>
+                        </div>
                     </div>
                 }
             }}
