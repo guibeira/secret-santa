@@ -21,3 +21,5 @@ build:
 build-mac:
 	make build && ./scripts/make_bundle_mac.sh
 
+build-win:
+	 cd front && trunk build --release && cd .. && cargo build --release
