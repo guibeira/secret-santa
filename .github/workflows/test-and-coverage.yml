@@ -28,7 +28,7 @@ jobs:
 
       - name: Run tests with tarpaulin
         run: |
-          cargo tarpaulin --verbose --out Html
+          make test
 
       - name: Upload coverage report
         uses: actions/upload-artifact@v3

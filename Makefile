@@ -4,16 +4,15 @@ start:
 start-debug:
 	RUST_LOG=debug cargo watch -w src -x  run
 
-test:
-	cargo tarpaulin
-
 
 install-deps:
 	rustup target add wasm32-unknown-unknown && cargo install --locked trunk
 
+test:
+	make install-deps && cd front && trunk build --release && cd .. && cargo tarpaulin --verbose --out Html
+
 up:
 	make install-deps && cd front && trunk build --release && cd .. && cargo run
-
 
 build:
 	make install-deps && cd front && trunk build --release && cd .. && cargo build --release
