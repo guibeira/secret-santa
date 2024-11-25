@@ -5,7 +5,7 @@ start-debug:
 	RUST_LOG=debug cargo watch -w src -x  run
 
 test:
-	cargo watch -w src -x  tarpaulin
+	cargo tarpaulin
 
 
 install-deps:

@@ -1,0 +1,37 @@
+name: Test and Coverage
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  test-and-coverage:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          override: true
+
+      - name: Install cargo-tarpaulin
+        run: |
+          cargo install cargo-tarpaulin
+
+      - name: Run tests with tarpaulin
+        run: |
+          cargo tarpaulin --verbose --out Html
+
+      - name: Upload coverage report
+        uses: actions/upload-artifact@v3
+        with:
+          name: coverage-report
+          path: tarpaulin-report.html
