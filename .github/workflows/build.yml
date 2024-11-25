@@ -41,10 +41,21 @@ jobs:
         run: |
           make build-mac
 
-      - name: Upload artifact
+      - name: Upload artifact for Windows
+        if: matrix.os == 'windows-latest'
         uses: actions/upload-artifact@v3
         with:
-          name: my-rust-app-${{ matrix.os }}
-          path: |
-            target/release/
+          name: secret-santa-windows
+          path: target/release/secret-santa.exe
 
+      - name: Compress Secret Santa.app
+        if: matrix.os == 'macos-latest'
+        run: |
+          zip -r "Secret Santa.app.zip" "Secret Santa.app"
+
+      - name: Upload artifact for macOS
+        if: matrix.os == 'macos-latest'
+        uses: actions/upload-artifact@v3
+        with:
+          name: secret-santa-macos
+          path: Secret Santa.app.zip
