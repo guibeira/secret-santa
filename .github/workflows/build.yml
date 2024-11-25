@@ -1,12 +1,9 @@
-name: Build Executables
+name: Build and Release
 
 on:
   push:
-    branches:
-      - main
-  pull_request:
-    branches:
-      - main
+    tags:
+      - "v*" # Aciona apenas para tags que começam com "v"
 
 jobs:
   build:
@@ -26,17 +23,17 @@ jobs:
           override: true
           components: rustfmt, clippy
 
-      - name: Setup targed for windows
+      - name: Setup target for Windows
         if: matrix.os == 'windows-latest'
-        run:
-          rustup target add wasm32-unknown-unknown  && cargo install --locked wasm-bindgen-cli && cargo install cargo-binstall && cargo binstall trunk
+        run: |
+          rustup target add wasm32-unknown-unknown && cargo install --locked wasm-bindgen-cli &&  cargo install cargo-binstall &&  cargo binstall trunk
 
       - name: Build project for Windows
         if: matrix.os == 'windows-latest'
         run: |
           make build-win
 
-      - name: Build project macOS
+      - name: Build project for macOS
         if: matrix.os == 'macos-latest'
         run: |
           make build-mac
@@ -51,11 +48,20 @@ jobs:
       - name: Compress Secret Santa.app
         if: matrix.os == 'macos-latest'
         run: |
-          zip -r "Secret Santa.app.zip" "Secret Santa.app"
+          cd target/release && zip -r "Secret Santa.app.zip" "Secret Santa.app"
 
       - name: Upload artifact for macOS
         if: matrix.os == 'macos-latest'
         uses: actions/upload-artifact@v3
         with:
           name: secret-santa-macos
-          path: Secret Santa.app.zip
+          path: target/release/Secret Santa.app.zip
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            target/release/secret-santa.exe
+            Secret Santa.app.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
