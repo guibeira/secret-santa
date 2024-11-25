@@ -48,7 +48,7 @@ jobs:
       - name: Compress Secret Santa.app
         if: matrix.os == 'macos-latest'
         run: |
-          cd target/release && zip -r "Secret Santa.app.zip" "Secret Santa.app"
+          zip -r "Secret Santa.app.zip" "Secret Santa.app"
 
       - name: Upload artifact for macOS
         if: matrix.os == 'macos-latest'
