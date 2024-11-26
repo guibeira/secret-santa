@@ -36,12 +36,7 @@ pub struct PropsStartGame {
 
 #[function_component(InitGame)]
 pub fn init_game(props: &PropsStartGame) -> Html {
-    let url = window()
-        .unwrap()
-        .location()
-        .href()
-        .unwrap_or_else(|_| "unknown".to_string());
-    let api = Api::new(url);
+    let api = Api::new();
     let error_msg: UseStateHandle<Option<String>> = use_state(|| None);
     let sante_game_info = props.santa_game_info.clone();
     let participant_name: UseStateHandle<String> = use_state(|| "".to_string());
@@ -288,7 +283,7 @@ pub fn in_progress(props: &PropsInProgressGame) -> Html {
         .href()
         .unwrap_or_else(|_| "unknown".to_string());
 
-    let api = Api::new(url.clone());
+    let api = Api::new();
 
     let onchange = {
         let partcipant_selected = partcipant_selected.clone();

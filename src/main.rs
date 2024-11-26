@@ -1,7 +1,6 @@
-//use actix_files::Files;
+use actix_files::Files;
 use actix_web::{http::header, web, App, HttpServer};
 use tokio;
-use tokio::process::Command;
 
 use bore_cli::client::Client;
 use dotenv::dotenv;
@@ -13,32 +12,12 @@ use actix_cors::Cors;
 
 use secret_santa::SecretSantaGame;
 use server::routes::routes;
+use server::utils::open_browser;
 
 const LOCAL_PORT: u16 = 8080;
 use actix_web_static_files::ResourceFiles;
 
 include!(concat!(env!("OUT_DIR"), "/generated.rs"));
-
-
-async fn open_browser(url: &str) {
-    let (command, args) = if cfg!(target_os = "windows") {
-        ("cmd", vec!["/C", "start", url])
-    } else if cfg!(target_os = "macos") {
-        ("open", vec![url])
-    } else if cfg!(target_os = "linux") {
-        ("xdg-open", vec![url])
-    } else {
-        eprintln!("Opening browser is not supported on this OS.");
-        return;
-    };
-
-    if let Err(err) = Command::new(command)
-        .args(&args)
-        .spawn()
-    {
-        eprintln!("Failed to open browser: {}", err);
-    }
-}
 
 
 #[actix_web::main]
@@ -57,7 +36,12 @@ async fn main() -> std::io::Result<()> {
     let bore_url = format!("http://bore.pub:{}", bore_port);
     let localhost_url = format!("http://localhost:{}", LOCAL_PORT);
 
+    #[cfg(debug_assertions)]
+    log::info!("Starting server on {}", localhost_url);
+
+    #[cfg(not(debug_assertions))]
     log::info!("Starting server on {}", bore_url);
+
     // run command to open bore url in browser
     if cfg!(debug_assertions) {
         log::info!("Running in debug mode");
@@ -70,13 +54,19 @@ async fn main() -> std::io::Result<()> {
                 .unwrap();
             client.listen().await.unwrap();
         });
+
     }
 
-    let bore_url_cl = bore_url.clone();
+    if cfg!(not(debug_assertions)) {
+        log::info!("Opening browser");
+        let bore_url_cl = bore_url.clone();
+        open_browser(&bore_url_cl).await;
+    }
+
     let _ = HttpServer::new(move || {
         let cors = Cors::default()
             .allowed_origin(&bore_url)
-            .allowed_origin(&localhost_url)
+            .allowed_origin("http://localhost:8000")
             .allowed_methods(vec!["GET", "POST"])
             .allowed_headers(vec![
                 header::CONTENT_TYPE,
@@ -86,19 +76,23 @@ async fn main() -> std::io::Result<()> {
             ])
             .supports_credentials();
         let generated = generate();
-        App::new()
+
+        let mut app = App::new()
             .wrap(actix_web::middleware::Logger::default())
             .app_data(secret_santa_game.clone())
             .service(web::scope("/secret-santa").configure(routes))
-            .service(ResourceFiles::new("/", generated))
-            //.service(Files::new("/", "./front/dist/").index_file("index.html"))
-            .wrap(cors)
+            .wrap(cors);
+
+        if cfg!(debug_assertions) {
+            app = app.service(Files::new("/", "./front/dist/").index_file("index.html"));
+        } else {
+            app = app.service(ResourceFiles::new("/", generated));
+        }
+        app
     })
     .bind(("127.0.0.1", LOCAL_PORT))?
-    .workers(1)
     .run()
     .await;
 
-    open_browser(&bore_url_cl).await;
     Ok(())
 }

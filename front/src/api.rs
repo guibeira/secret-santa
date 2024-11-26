@@ -1,5 +1,6 @@
 use reqwasm::http::Request;
-
+use gloo::console::log;
+use web_sys::window;
 
 use crate::app::PlayersCreate;
 
@@ -9,9 +10,21 @@ pub struct Api {
 }
 
 impl Api {
+    pub fn new() -> Self {
+        let mut url = window()
+            .unwrap()
+            .location()
+            .href()
+            .unwrap_or_else(|_| "unknown".to_string());
 
-    pub fn new(url: String) -> Self {
-        let url = url+"secret-santa";
+        if cfg!(debug_assertions) {
+            log!("Running on debug mode");
+            url = "http://localhost:8080/".to_string();
+        } else {
+            log!("Running on release mode");
+        }
+        log!(format!("using url: {}", url));
+        let url = url + "secret-santa";
         Api { url }
     }
     pub async fn remove_player(

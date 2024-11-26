@@ -2,7 +2,7 @@ start:
 	cargo watch -w src -x  run
 
 start-debug:
-	RUST_LOG=debug cargo watch -w src -x  run
+	RUST_LOG=actix_web=debug cargo watch -w src -x  run
 
 
 install-deps:
