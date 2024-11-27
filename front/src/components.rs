@@ -9,6 +9,7 @@ use wasm_bindgen::JsCast;
 use web_sys::HtmlInputElement;
 use web_sys::{window, MouseEvent};
 use yew::{function_component, html, prelude::*, Html};
+use yew_i18n::use_translation;
 
 #[function_component(Confetti)]
 pub fn confetti() -> Html {
@@ -32,6 +33,7 @@ pub fn confetti() -> Html {
 #[derive(Debug, PartialEq, Clone, Properties)]
 pub struct PropsStartGame {
     pub santa_game_info: UseStateHandle<SantaGameInfo>,
+    pub selected_language: String,
 }
 
 #[function_component(InitGame)]
@@ -41,6 +43,8 @@ pub fn init_game(props: &PropsStartGame) -> Html {
     let sante_game_info = props.santa_game_info.clone();
     let participant_name: UseStateHandle<String> = use_state(|| "".to_string());
     let is_loading: UseStateHandle<bool> = use_state(|| false);
+    let mut i18n = use_translation();
+    let _ = i18n.set_translation_language(&props.selected_language);
 
     let participant_name_on_change = {
         let participant_name = participant_name.clone();
@@ -183,7 +187,6 @@ pub fn init_game(props: &PropsStartGame) -> Html {
         });
     });
 
-
     // for better visualization
     let sante_game_info_clone = props.santa_game_info.clone();
     let mut new_participants = HashMap::new();
@@ -201,16 +204,16 @@ pub fn init_game(props: &PropsStartGame) -> Html {
     };
     html! {
             if *is_loading {
-                <div>{ "Loading..." }</div>
+                <div>{ &i18n.t("Loading...") }</div>
             } else {
 
             <div class="flex justify-center">
                 <div class="w-full max-w-[48rem]">
-                    <span class="text-sm text-gray-500 dark:text-gray-400"> { "Entre com os nomes dos participantes"  }</span>
+                    <span class="text-sm text-gray-500 dark:text-gray-400"> { &i18n.t("Enter the names of the participants") }</span>
                         <form class="mt-4" onsubmit={onsubmit}>
                                 <div class="flex">
                                 <div class="relative w-full">
-                                    <input onchange={participant_name_on_change} value={participant_name.deref().clone()} type="text" id="name" class={input_class} placeholder="Fulano" required={true}/>
+                                    <input onchange={participant_name_on_change} value={participant_name.deref().clone()} type="text" id="name" class={input_class} placeholder={i18n.t("John")} required={true}/>
                                         <button type="submit" class="absolute top-0 end-0 p-2.5 h-full text-sm font-medium text-white bg-blue-700 rounded-e-lg border border-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
                                             <svg class="w-4 h-4" aria-hidden="true" fill="white" version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 45.402 45.402" data-darkreader-inline-fill="" style="--darkreader-inline-fill: white;"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <g> <path d="M41.267,18.557H26.832V4.134C26.832,1.851,24.99,0,22.707,0c-2.283,0-4.124,1.851-4.124,4.135v14.432H4.141 c-2.283,0-4.139,1.851-4.138,4.135c-0.001,1.141,0.46,2.187,1.207,2.934c0.748,0.749,1.78,1.222,2.92,1.222h14.453V41.27 c0,1.142,0.453,2.176,1.201,2.922c0.748,0.748,1.777,1.211,2.919,1.211c2.282,0,4.129-1.851,4.129-4.133V26.857h14.435 c2.283,0,4.134-1.867,4.133-4.15C45.399,20.425,43.548,18.557,41.267,18.557z"></path> </g> </g></svg>
                                         </button>
@@ -237,7 +240,7 @@ pub fn init_game(props: &PropsStartGame) -> Html {
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none">
     <path d="M4 7H20M10 10V18M14 10V18M10 3H14C14.2652 3 14.5196 3.10536 14.7071 3.29289C14.8946 3.48043 15 3.73478 15 4V7H9V4C9 3.73478 9.10536 3.48043 9.29289 3.29289C9.48043 3.10536 9.73478 3 10 3ZM6 7H18V20C18 20.2652 17.8946 20.5196 17.7071 20.7071C17.5196 20.8946 17.2652 21 17 21H7C6.73478 21 6.48043 20.8946 6.29289 20.7071C6.10536 20.5196 6 20.2652 6 20V7Z" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
     </svg>
-                                                <span class="sr-only">{"Remover participante"}</span>
+                                                <span class="sr-only">{&i18n.t("Remover participante")}</span>
                                             </button>
                                         </div>
                                     </li>
@@ -251,7 +254,7 @@ pub fn init_game(props: &PropsStartGame) -> Html {
                     {if keys.len() > 2 {
                         html! {
                             <div class="flex justify-center mt-4">
-                                <button class="px-6 py-3.5 text-base font-medium text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 rounded-lg text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800" onclick={start_game}>{ "Iniciar" }</button>
+                                <button class="px-6 py-3.5 text-base font-medium text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 rounded-lg text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800" onclick={start_game}>{ &i18n.t("Start Game") }</button>
                             </div>
                         }
                     }else{
@@ -266,6 +269,7 @@ pub fn init_game(props: &PropsStartGame) -> Html {
 #[derive(Debug, PartialEq, Clone, Properties)]
 pub struct PropsInProgressGame {
     pub participants: Vec<Player>,
+    pub selected_language: String,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -277,6 +281,8 @@ pub struct Person {
 pub fn in_progress(props: &PropsInProgressGame) -> Html {
     let partcipant_selected: UseStateHandle<String> = use_state(|| "".to_string());
     let sorted_participant: UseStateHandle<Option<Person>> = use_state(|| None);
+    let mut i18n = use_translation();
+    let _ = i18n.set_translation_language(&props.selected_language);
     let url = window()
         .unwrap()
         .location()
@@ -322,19 +328,20 @@ pub fn in_progress(props: &PropsInProgressGame) -> Html {
         })
     };
 
-
     let copy_to_clipboard = {
         let url = url.clone();
+        let i18n = i18n.clone();
         Callback::from(move |_: MouseEvent| {
             if let Some(window) = window() {
                 if let Some(navigator) = window.navigator().dyn_into::<web_sys::Navigator>().ok() {
                     let clipboard = navigator.clipboard();
                     let text = url.clone();
+                    let i18n = i18n.clone();
                     wasm_bindgen_futures::spawn_local(async move {
                         let promise = clipboard.write_text(&text);
                         match wasm_bindgen_futures::JsFuture::from(promise).await {
                             Ok(_) => {
-                                alert("Copiado para a área de transferência");
+                                alert( &i18n.t("Copied to the clipboard"));
                             }
                             Err(err) => {
                                 alert(&format!(
@@ -362,7 +369,7 @@ pub fn in_progress(props: &PropsInProgressGame) -> Html {
                 html! {
                     <>
                     <Confetti/>
-                    <h1 class="animate__animated animate__rubberBand mb-4 text-4xl font-extrabold leading-none tracking-tight text-gray-900 md:text-5xl lg:text-6xl dark:text-white">{"Você sorteou: "}
+                    <h1 class="animate__animated animate__rubberBand mb-4 text-4xl font-extrabold leading-none tracking-tight text-gray-900 md:text-5xl lg:text-6xl dark:text-white">{ &i18n.t("You picked")}
                     <span class="text-blue-600 dark:text-blue-500">{sorted_participant.name.clone()}</span>
                     </h1>
                     </>
@@ -372,9 +379,9 @@ pub fn in_progress(props: &PropsInProgressGame) -> Html {
 
                     <div class="">
 
-                        <p class="animate__tada text-sm text-gray-500 dark:text-gray-400 mb-4"> { "Quem é você?" }</p>
+                        <p class="animate__tada text-sm text-gray-500 dark:text-gray-400 mb-4"> { &i18n.t("Who are you ?") }</p>
                         <select onchange={onchange} class="block w-full px-4 py-3 text-base text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" >
-                            <option selected={true}  value={""}>{"Selecione seu nome"}</option>
+                            <option selected={true}  value={""}>{&i18n.t("Select your name")}</option>
                         {
                             participants_filtred.iter().map(|participant| html! {
                                 <option value={participant.name.clone()}>{participant.name.clone()}</option>
@@ -383,13 +390,13 @@ pub fn in_progress(props: &PropsInProgressGame) -> Html {
                         </select>
                         { if !partcipant_selected.deref().is_empty() {
                             html! {
-                                <button class="mt-10 px-6 py-3.5 text-base font-medium text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 rounded-lg text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800" onclick={onclick}>{ "Sortear" }</button>
+                                <button class="mt-10 px-6 py-3.5 text-base font-medium text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 rounded-lg text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800" onclick={onclick}>{ &i18n.t("Pick")}</button>
                             }
                         }else{
                             html!{}
                         }}
 
-                        <h2 class="animate__animated animate__rubberBand mb-4 mt-20 text-4xl font-extrabold leading-none tracking-tight text-gray-900 md:text-5xl lg:text-6xl dark:text-white">{"Compartilhe o sorteio com seus amigos 👇"}</h2>
+                        <h2 class="animate__animated animate__rubberBand mb-4 mt-20 text-4xl font-extrabold leading-none tracking-tight text-gray-900 md:text-5xl lg:text-6xl dark:text-white">{&i18n.t("Share with other players")}</h2>
                         <div class="flex justify-center">
                         <div class="grid grid-cols-8 gap-2 w-full max-w-[23rem]">
                             <label for="link" class="sr-only">{"Label"} </label>
@@ -403,12 +410,11 @@ pub fn in_progress(props: &PropsInProgressGame) -> Html {
                             />
 
                             <button
-                                data-copy-to-clipboard-target="npm-install"
                                 class="col-span-2 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 items-center inline-flex justify-center"
                                 onclick={copy_to_clipboard}
                             >
 
-                                <span id="default-message">{" Copiar link "}</span>
+                                <span id="default-message">{&i18n.t("Copy link")}</span>
                                 <span id="success-message" class="hidden inline-flex items-center">
                                     <svg class="w-3 h-3 text-white me-1.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 16 12">
                                         <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 5.917 5.724 10.5 15 1.5"/>

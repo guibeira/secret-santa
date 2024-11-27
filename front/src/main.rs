@@ -2,8 +2,8 @@ mod api;
 mod app;
 mod components;
 
-use app::App;
+use app::Wrap;
 
 fn main() {
-    yew::Renderer::<App>::new().render();
+    yew::Renderer::<Wrap>::new().render();
 }

@@ -67,6 +67,7 @@ async fn main() -> std::io::Result<()> {
         let cors = Cors::default()
             .allowed_origin(&bore_url)
             .allowed_origin("http://localhost:8000")
+            .allowed_origin("http://127.0.0.1:8000")
             .allowed_methods(vec!["GET", "POST"])
             .allowed_headers(vec![
                 header::CONTENT_TYPE,
