@@ -1,11 +1,11 @@
 use gloo::console::log;
 use serde::{Deserialize, Serialize};
-use web_sys::HtmlInputElement;
 use std::collections::HashMap;
 use std::ops::Deref;
+use web_sys::HtmlInputElement;
 use yew::{function_component, html, prelude::*, use_effect_with, Html};
-use yew_i18n::I18nProvider;
 use yew_i18n::use_translation;
+use yew_i18n::I18nProvider;
 
 use crate::api::Api;
 use crate::components::{InProgressGame, InitGame};
@@ -197,53 +197,52 @@ pub fn app() -> Html {
     let mut i18n = use_translation();
     let _ = i18n.set_translation_language(&selected_language);
     html! {
-            <div class="container mx-auto mt-10">
+        <div class="container mx-auto mt-10">
 
-            if *is_loading {
-                <Loading />
-            }else{
-
+            <div class="language-selector">
                 <select
                     ref={selected_language_ref}
                     onchange={on_select_change}
+                    class="text-sm bg-transparent border-none focus:outline-none"
                 >
-                    <option value="en" selected=true hidden=true>{ "Select Language" }</option>
+                    <option value="en" selected=true hidden=true>{ "🌐 Language" }</option>
                     { for i18n.config.supported_languages.iter().map(|&lang| render_language_option(lang)) }
                 </select>
+            </div>
 
+            if *is_loading {
+                <Loading />
+            } else {
                 <div class="overflow-y-auto full max-h-screen p-4 text-center bg-white border border-gray-200 rounded-lg shadow sm:p-8 dark:bg-gray-800 dark:border-gray-700">
-                    <div class="flex flex-col  pb-10">
+                    <div class="flex flex-col pb-10">
                         <h1 class="mb-1 text-xl font-medium text-gray-900 dark:text-white">{&i18n.t("Secret Santa")}</h1>
                         <span class="text-sm text-gray-500 dark:text-gray-400"> { format!("{} {}", &i18n.t("Amount of participants"), counter) }</span>
                         <div class="flex mt-4 md:mt-6">
                         </div>
 
-
-                    {match santa_game_info.deref().status {
-                        GameStatus::NotStarted => {
-
-                            html! {
-                                <InitGame santa_game_info={santa_game_info.clone()} selected_language={selected_language.deref().clone()} />
+                        {match santa_game_info.deref().status {
+                            GameStatus::NotStarted => {
+                                html! {
+                                    <InitGame santa_game_info={santa_game_info.clone()} selected_language={selected_language.deref().clone()} />
+                                }
                             }
-                        }
-                        GameStatus::InProgress => {
-                            html! {
-                                <InProgressGame 
-                                    participants={santa_game_info.players.clone()} 
-                                    selected_language={selected_language.deref().clone()}
-                                />
+                            GameStatus::InProgress => {
+                                html! {
+                                    <InProgressGame
+                                        participants={santa_game_info.players.clone()}
+                                        selected_language={selected_language.deref().clone()}
+                                    />
+                                }
                             }
-                        }
-                        GameStatus::Finished => {
-                            html! {
-                                <>
-                                    <h3 class="text-3xl font-bold dark:text-white">{ &i18n.t("Game Finished")}</h3>
-                                    <button class="mt-10 px-6 py-3.5 text-base font-medium text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 rounded-lg text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800" onclick={reset_send} type="submit">{&i18n.t("Restart Game") }</button>
-                                </>
+                            GameStatus::Finished => {
+                                html! {
+                                    <>
+                                        <h3 class="text-3xl font-bold dark:text-white">{ &i18n.t("Game Finished")}</h3>
+                                        <button class="mt-10 px-6 py-3.5 text-base font-medium text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 rounded-lg text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800" onclick={reset_send} type="submit">{&i18n.t("Restart Game") }</button>
+                                    </>
+                                }
                             }
-                        }
-                    }
-                    }
+                        }}
                     </div>
                 </div>
             }

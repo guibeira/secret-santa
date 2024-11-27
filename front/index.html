@@ -1,119 +1,153 @@
 <!doctype html>
 <html>
-  <head>
-    <meta charset="utf-8" />
-    <title>Secrect Santa</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
-    />
-    <style>
-      :root {
-        --animate-duration: 800ms;
-        --animate-delay: 0.9s;
-      }
-      body {
-        background: #c4e4ff;
-        background: radial-gradient(
-          circle,
-          hsl(223, 40%, 22%),
-          hsl(223, 40%, 12%)
-        );
-        overflow: hidden;
-        height: 100vh;
-        width: 100%;
-        user-select: none;
-        padding: 0;
-        margin: 0;
-      }
-    </style>
 
-    <style>
-      #confettis {
-        overflow: hidden;
-        position: absolute;
-        height: 100%;
-        width: 100%;
+<head>
+  <meta charset="utf-8" />
+  <title>Secrect Santa</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+  <style>
+    :root {
+      --animate-duration: 800ms;
+      --animate-delay: 0.9s;
+    }
+
+    body {
+      background: #c4e4ff;
+      background: radial-gradient(circle,
+          hsl(223, 40%, 22%),
+          hsl(223, 40%, 12%));
+      overflow: hidden;
+      height: 100vh;
+      width: 100%;
+      user-select: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .language-selector {
+      position: fixed;
+      top: 10px;
+      right: 20px;
+      z-index: 1000;
+    }
+
+    .language-selector select {
+      background-color: transparent;
+      color: #333;
+      border: none;
+      padding: 5px;
+      font-size: 0.9rem;
+      cursor: pointer;
+      outline: none;
+    }
+
+    .language-selector select:focus {
+      border-bottom: 1px solid #555;
+    }
+
+    #confettis {
+      overflow: hidden;
+      position: absolute;
+      height: 100%;
+      width: 100%;
+    }
+
+    .confetti {
+      left: 50%;
+      width: 16px;
+      height: 16px;
+      position: absolute;
+      transform-origin: left top;
+      animation: confetti 5s ease-in-out -2s infinite;
+    }
+
+    @keyframes confetti {
+      0% {
+        transform: rotateZ(15deg) rotateY(0deg) translate(0, 0);
       }
-      .confetti {
-        left: 50%;
-        width: 16px;
-        height: 16px;
-        position: absolute;
-        transform-origin: left top;
-        animation: confetti 5s ease-in-out -2s infinite;
+
+      25% {
+        transform: rotateZ(5deg) rotateY(360deg) translate(-5vw, 20vh);
       }
-      @keyframes confetti {
-        0% {
-          transform: rotateZ(15deg) rotateY(0deg) translate(0, 0);
-        }
-        25% {
-          transform: rotateZ(5deg) rotateY(360deg) translate(-5vw, 20vh);
-        }
-        50% {
-          transform: rotateZ(15deg) rotateY(720deg) translate(5vw, 60vh);
-        }
-        75% {
-          transform: rotateZ(5deg) rotateY(1080deg) translate(-10vw, 80vh);
-        }
-        100% {
-          transform: rotateZ(15deg) rotateY(1440deg) translate(10vw, 110vh);
-        }
+
+      50% {
+        transform: rotateZ(15deg) rotateY(720deg) translate(5vw, 60vh);
       }
-      .confetti:nth-child(1) {
-        left: 10%;
-        animation-delay: 0;
-        background-color: #fc0120;
+
+      75% {
+        transform: rotateZ(5deg) rotateY(1080deg) translate(-10vw, 80vh);
       }
-      .confetti:nth-child(2) {
-        left: 20%;
-        animation-delay: -5s;
-        background-color: #8257e6;
+
+      100% {
+        transform: rotateZ(15deg) rotateY(1440deg) translate(10vw, 110vh);
       }
-      .confetti:nth-child(3) {
-        left: 30%;
-        animation-delay: -3s;
-        background-color: #ffbf4d;
-      }
-      .confetti:nth-child(4) {
-        left: 40%;
-        animation-delay: -2.5s;
-        background-color: #fe5d7a;
-      }
-      .confetti:nth-child(5) {
-        left: 50%;
-        animation-delay: -4s;
-        background-color: #45ec9c;
-      }
-      .confetti:nth-child(6) {
-        left: 60%;
-        animation-delay: -6s;
-        background-color: #f6e327;
-      }
-      .confetti:nth-child(7) {
-        left: 70%;
-        animation-delay: -1.5s;
-        background-color: #f769ce;
-      }
-      .confetti:nth-child(8) {
-        left: 80%;
-        animation-delay: -2s;
-        background-color: #007de7;
-      }
-      .confetti:nth-child(9) {
-        left: 90%;
-        animation-delay: -3.5s;
-        background-color: #63b4fc;
-      }
-      .confetti:nth-child(10) {
-        left: 100%;
-        animation-delay: -2.5s;
-        background-color: #f9c4ea;
-      }
-    </style>
-  </head>
-  <body>
-  </body>
+    }
+
+    .confetti:nth-child(1) {
+      left: 10%;
+      animation-delay: 0;
+      background-color: #fc0120;
+    }
+
+    .confetti:nth-child(2) {
+      left: 20%;
+      animation-delay: -5s;
+      background-color: #8257e6;
+    }
+
+    .confetti:nth-child(3) {
+      left: 30%;
+      animation-delay: -3s;
+      background-color: #ffbf4d;
+    }
+
+    .confetti:nth-child(4) {
+      left: 40%;
+      animation-delay: -2.5s;
+      background-color: #fe5d7a;
+    }
+
+    .confetti:nth-child(5) {
+      left: 50%;
+      animation-delay: -4s;
+      background-color: #45ec9c;
+    }
+
+    .confetti:nth-child(6) {
+      left: 60%;
+      animation-delay: -6s;
+      background-color: #f6e327;
+    }
+
+    .confetti:nth-child(7) {
+      left: 70%;
+      animation-delay: -1.5s;
+      background-color: #f769ce;
+    }
+
+    .confetti:nth-child(8) {
+      left: 80%;
+      animation-delay: -2s;
+      background-color: #007de7;
+    }
+
+    .confetti:nth-child(9) {
+      left: 90%;
+      animation-delay: -3.5s;
+      background-color: #63b4fc;
+    }
+
+    .confetti:nth-child(10) {
+      left: 100%;
+      animation-delay: -2.5s;
+      background-color: #f9c4ea;
+    }
+  </style>
+</head>
+
+<body>
+</body>
+
 </html>
