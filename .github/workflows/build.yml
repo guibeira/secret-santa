@@ -38,7 +38,7 @@ jobs:
       - name: Build project for macOS
         if: matrix.os == 'macos-latest'
         run: |
-          cargo install cargo-bundle && cargo bundle --release
+          make build-mac
 
       - name: Upload artifact for Windows
         if: matrix.os == 'windows-latest'
