@@ -333,8 +333,8 @@ pub fn in_progress(props: &PropsInProgressGame) -> Html {
                     Ok(response) => {
                         if response.status() != 200 {
                             let api_response = response.json::<ApiError>().await.unwrap();
-                            log!(format!("Error msg : {}", api_response.error));
-                            return;
+                            let message = format!("Error msg : {}", api_response.error.to_string());
+                            alert(&message);
                         }
                         let response = response.json::<Person>().await.unwrap();
                         sorted_participant.set(Some(response));

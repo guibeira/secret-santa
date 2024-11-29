@@ -90,6 +90,7 @@ pub fn wrap() -> Html {
             "Copy link": "Copiar link",
             "Game Finished": "Jogo Finalizado",
             "Copied to the clipboard": "Copiado para a área de transferência",
+            "You already picked": "Você já tirou",
         }),
     );
 
@@ -113,6 +114,7 @@ pub fn wrap() -> Html {
             "Copy link": "Copy link",
             "Game Finished": "Game Finished",
             "Copied to the clipboard": "Copied to the clipboard",
+            "You already picked": "You already picked",
         }),
     );
     html! {
