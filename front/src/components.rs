@@ -1,4 +1,5 @@
 use crate::api::Api;
+use web_sys::Url;
 use crate::app::{ApiError, GameStatus, Player, PlayersCreate, SantaGameInfo};
 use gloo::console::log;
 use gloo::dialogs::alert;
@@ -277,18 +278,35 @@ pub struct Person {
     pub name: String,
 }
 
+
+fn get_url() -> String {
+    if cfg!(debug_assertions) {
+        "http://localhost:8080/".to_string()
+    } else {
+        let current_windown = window().expect("no global window exists");
+        let location = current_windown.location();
+
+        // Parse the full URL
+        let full_url = location.href().unwrap_or_default();
+        let parsed_url = Url::new(&full_url).expect("Failed to parse URL");
+
+        // remove port from host
+        let url_without_port = parsed_url.hostname();
+        let url_parts: Vec<&str> = url_without_port.split(':').collect();
+        let hostname = url_parts[0];
+
+        // build url https//<host>/<port>
+        format!("https://{}/{}/", hostname, parsed_url.port()).to_string()
+    }
+}
+
 #[function_component(InProgressGame)]
 pub fn in_progress(props: &PropsInProgressGame) -> Html {
     let partcipant_selected: UseStateHandle<String> = use_state(|| "".to_string());
     let sorted_participant: UseStateHandle<Option<Person>> = use_state(|| None);
     let mut i18n = use_translation();
     let _ = i18n.set_translation_language(&props.selected_language);
-    let url = window()
-        .unwrap()
-        .location()
-        .href()
-        .unwrap_or_else(|_| "unknown".to_string());
-
+    let url = get_url();
     let api = Api::new();
 
     let onchange = {
