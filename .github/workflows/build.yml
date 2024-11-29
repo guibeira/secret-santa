@@ -35,10 +35,10 @@ jobs:
         run: |
           make build-win
 
-      - name: Build project for macOS
-        if: matrix.os == 'macos-latest'
-        run: |
-          cargo install cargo-bundle && make build-mac
+      # - name: Build project for macOS
+      #   if: matrix.os == 'macos-latest'
+      #   run: |
+      #     cargo install cargo-bundle && make build-mac
 
       - name: Upload artifact for Windows
         if: matrix.os == 'windows-latest'
@@ -47,23 +47,22 @@ jobs:
           name: secret-santa-windows
           path: target/release/secret-santa.exe
 
-      - name: Compress Secret Santa.app
-        if: matrix.os == 'macos-latest'
-        run: |
-          zip -r "Secret Santa.app.zip" "target/release/bundle/osx/Secret Santa.app"
+      # - name: Compress Secret Santa.app
+      #   if: matrix.os == 'macos-latest'
+      #   run: |
+      #     zip -r "Secret Santa.app.zip" "target/release/bundle/osx/Secret Santa.app"
 
-      - name: Upload artifact for macOS
-        if: matrix.os == 'macos-latest'
-        uses: actions/upload-artifact@v3
-        with:
-          name: secret-santa-macos
-          path: Secret Santa.app.zip
+      # - name: Upload artifact for macOS
+      #   if: matrix.os == 'macos-latest'
+      #   uses: actions/upload-artifact@v3
+      #   with:
+      #     name: secret-santa-macos
+      #     path: Secret Santa.app.zip
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v1
         with:
           files: |
             target/release/secret-santa.exe
-            Secret Santa.app.zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

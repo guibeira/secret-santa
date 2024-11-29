@@ -9,7 +9,7 @@ install-deps:
 	rustup target add wasm32-unknown-unknown && cargo install --locked trunk
 
 test:
-	make install-deps && cd front && trunk build --release && cd .. && cargo tarpaulin --verbose --out Html
+	make install-deps && cd front && trunk build --release && cd .. && cargo tarpaulin
 
 up:
 	make install-deps && cd front && trunk build --release && cd .. && cargo run

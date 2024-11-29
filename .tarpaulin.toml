@@ -1,0 +1,9 @@
+[coverage]
+exclude = ["front"]
+
+workspace = true
+avoid-cfg-tarpaulin = true
+ignore-tests = true
+out = ["Html"]
+timeout = "600s"
+all-features = true
