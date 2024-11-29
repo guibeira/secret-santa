@@ -25,22 +25,24 @@ async fn main() -> std::io::Result<()> {
     env_logger::init_from_env(env_logger::Env::new().default_filter_or("info"));
     dotenv().ok();
 
-    // random port
-    let bore_port = rand::random::<u16>();
+    // random port between 1000 and 2000
+    let bore_port = rand::random::<u16>() % 1000 + 1000;
 
-    // create game login
+    // create game logic
     let game = SecretSantaGame::default();
     let game_data = Arc::new(Mutex::new(game));
     let secret_santa_game = web::Data::new(game_data);
 
-    let bore_url = format!("http://bore.pub:{}", bore_port);
+    let tunnel_url = format!("http://tunnel.guibeira.com:{}", bore_port);
+
+    #[cfg(debug_assertions)]
     let localhost_url = format!("http://localhost:{}", LOCAL_PORT);
 
     #[cfg(debug_assertions)]
     log::info!("Starting server on {}", localhost_url);
 
     #[cfg(not(debug_assertions))]
-    log::info!("Starting server on {}", bore_url);
+    log::info!("Starting server on {}", tunnel_url);
 
     // run command to open bore url in browser
     if cfg!(debug_assertions) {
@@ -49,7 +51,7 @@ async fn main() -> std::io::Result<()> {
         log::info!("Running in release mode");
         // init tunneling client
         tokio::spawn(async move {
-            let client = Client::new("localhost", LOCAL_PORT, "bore.pub", bore_port, None)
+            let client = Client::new("localhost", LOCAL_PORT, "tunnel.guibeira.com", bore_port, Some("santa"))
                 .await
                 .unwrap();
             client.listen().await.unwrap();
@@ -59,15 +61,17 @@ async fn main() -> std::io::Result<()> {
 
     if cfg!(not(debug_assertions)) {
         log::info!("Opening browser");
-        let bore_url_cl = bore_url.clone();
-        open_browser(&bore_url_cl).await;
+        let url = format!("https://tunnel.guibeira.com/{}", bore_port);
+        open_browser(&url).await;
     }
 
-    let _ = HttpServer::new(move || {
+    HttpServer::new(move || {
         let cors = Cors::default()
-            .allowed_origin(&bore_url)
+            .allowed_origin(&tunnel_url)
             .allowed_origin("http://localhost:8000")
+            .allowed_origin("http://localhost:8080")
             .allowed_origin("http://127.0.0.1:8000")
+            .allowed_origin("http://127.0.0.1:8080")
             .allowed_methods(vec!["GET", "POST"])
             .allowed_headers(vec![
                 header::CONTENT_TYPE,
@@ -77,7 +81,6 @@ async fn main() -> std::io::Result<()> {
             ])
             .supports_credentials();
         let generated = generate();
-
         let mut app = App::new()
             .wrap(actix_web::middleware::Logger::default())
             .app_data(secret_santa_game.clone())
@@ -93,7 +96,6 @@ async fn main() -> std::io::Result<()> {
     })
     .bind(("127.0.0.1", LOCAL_PORT))?
     .run()
-    .await;
+    .await
 
-    Ok(())
 }
