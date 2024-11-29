@@ -38,7 +38,7 @@ jobs:
       - name: Build project for macOS
         if: matrix.os == 'macos-latest'
         run: |
-          make build-mac
+          cargo install cargo-bundle && cargo bundle --release
 
       - name: Upload artifact for Windows
         if: matrix.os == 'windows-latest'
@@ -50,7 +50,7 @@ jobs:
       - name: Compress Secret Santa.app
         if: matrix.os == 'macos-latest'
         run: |
-          zip -r "Secret Santa.app.zip" "Secret Santa.app"
+          zip -r "Secret Santa.app.zip" "/target/release/bundle/osx/Secret Santa.app"
 
       - name: Upload artifact for macOS
         if: matrix.os == 'macos-latest'

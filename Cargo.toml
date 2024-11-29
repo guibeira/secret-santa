@@ -32,3 +32,10 @@ static-files = "0.2.1"
 [build-dependencies]
 static-files = "0.2.1"
 winres = "0.1"
+
+
+[package.metadata.bundle]
+name = "Secret Santa"
+identifier = "tunnel.guibeira.com"
+icon = ["icons/santa.icns"]
+resources = ["icons/santa.icns"]
