@@ -57,7 +57,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: secret-santa-macos
-          path: target/release/Secret Santa.app.zip
+          path: Secret Santa.app.zip
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v1

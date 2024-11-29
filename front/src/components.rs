@@ -1,5 +1,4 @@
 use crate::api::Api;
-use web_sys::Url;
 use crate::app::{ApiError, GameStatus, Player, PlayersCreate, SantaGameInfo};
 use gloo::console::log;
 use gloo::dialogs::alert;
@@ -7,10 +6,10 @@ use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::ops::Deref;
 use wasm_bindgen::JsCast;
-use web_sys::HtmlInputElement;
-use web_sys::{window, MouseEvent};
+use web_sys::{Url, window, HtmlInputElement};
 use yew::{function_component, html, prelude::*, Html};
 use yew_i18n::use_translation;
+use yew_hooks::prelude::*;
 
 #[function_component(Confetti)]
 pub fn confetti() -> Html {
@@ -346,31 +345,15 @@ pub fn in_progress(props: &PropsInProgressGame) -> Html {
         })
     };
 
-    let copy_to_clipboard = {
-        let url = url.clone();
+    let url_clone = url.clone();
+    let clipboard = use_clipboard();
+
+    let onclick_clipboard = {
+        let clipboard = clipboard.clone();
         let i18n = i18n.clone();
-        Callback::from(move |_: MouseEvent| {
-            if let Some(window) = window() {
-                if let Some(navigator) = window.navigator().dyn_into::<web_sys::Navigator>().ok() {
-                    let clipboard = navigator.clipboard();
-                    let text = url.clone();
-                    let i18n = i18n.clone();
-                    wasm_bindgen_futures::spawn_local(async move {
-                        let promise = clipboard.write_text(&text);
-                        match wasm_bindgen_futures::JsFuture::from(promise).await {
-                            Ok(_) => {
-                                alert( &i18n.t("Copied to the clipboard"));
-                            }
-                            Err(err) => {
-                                alert(&format!(
-                                    "Erro ao copiar para a área de transferência: {:?}",
-                                    err
-                                ));
-                            }
-                        }
-                    });
-                }
-            }
+        Callback::from(move |_| {
+            clipboard.write_text(url_clone.clone());
+            alert( &i18n.t("Copied to the clipboard"));
         })
     };
 
@@ -429,7 +412,7 @@ pub fn in_progress(props: &PropsInProgressGame) -> Html {
 
                             <button
                                 class="col-span-2 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 items-center inline-flex justify-center"
-                                onclick={copy_to_clipboard}
+                                onclick={onclick_clipboard}
                             >
 
                                 <span id="default-message">{&i18n.t("Copy link")}</span>
