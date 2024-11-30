@@ -38,7 +38,7 @@ Open another terminal, and in the root folder, run:
 make start
 ```
 
-Now in your browser access [localhost:8080](http://localhost:8080)
+Now in your browser access [localhost:8080](http://localhost:8000)
 
 ## Test
 
