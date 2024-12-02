@@ -1,24 +1,37 @@
+
+.PHONY: start start-debug install-deps test up build build-mac build-win
+
+CARGO_WATCH = cargo watch -w src -x run
+INSTALL_DEPS = rustup target add wasm32-unknown-unknown && cargo install --locked trunk
+BUILD_FRONT = cd front && trunk build --release && cd ..
+
 start:
-	cargo watch -w src -x  run
+	$(CARGO_WATCH)
 
 start-debug:
-	RUST_LOG=actix_web=debug cargo watch -w src -x  run
-
+	RUST_LOG=actix_web=debug $(CARGO_WATCH)
 
 install-deps:
-	rustup target add wasm32-unknown-unknown && cargo install --locked trunk
+	$(INSTALL_DEPS)
 
-test:
-	make install-deps && cd front && trunk build --release && cd .. && cargo tarpaulin
+test: install-deps
+	$(BUILD_FRONT)
+	cargo tarpaulin
 
-up:
-	make install-deps && cd front && trunk build --release && cd .. && cargo run
+up: install-deps
+	$(BUILD_FRONT)
+	cargo run
 
-build:
-	make install-deps && cd front && trunk build --release && cd .. && cargo build --release
+build: install-deps
+	$(BUILD_FRONT)
+	cargo build --release
 
-build-mac:
-	make install-deps && cd front && trunk build --release && cd .. && cargo bundle --release
+build-mac: install-deps
+	$(BUILD_FRONT)
+	cargo bundle --release
 
 build-win:
-	 cd front && trunk build --release && cd .. && cargo build --release
+	$(BUILD_FRONT)
+	cargo build --release
+      
+
