@@ -1,10 +1,10 @@
 [package]
-name = "secrect-santa"
+name = "secret-santa"
 version = "0.1.0"
 edition = "2021"
-description = "My first try using Yew framework"
+description = "A secret santa"
 readme = "README.md"
-repository = "https://github.com/yewstack/yew-trunk-minimal-template"
+repository = "https://github.com/guibeira/secret-santa"
 license = "MIT OR Apache-2.0"
 keywords = ["yew", "trunk"]
 categories = ["gui", "wasm", "web-programming"]
